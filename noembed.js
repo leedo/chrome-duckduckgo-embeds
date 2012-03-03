@@ -53,12 +53,11 @@
       return;
     }
 
-    var href = link.attr('href');
     if (!css_inserted) insert_css();
 
     $.ajax({
       method : "get",
-      url : oembed + encodeURI(href),
+      url : oembed + encodeURI(link.attr('href')),
       dataType: "json",
       success: function(data) {
         if (!data['html']) return;
