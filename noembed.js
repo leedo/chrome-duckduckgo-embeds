@@ -3,9 +3,10 @@
   var css = "https://noembed.com/noembed.css";
   var oembed = "https://noembed.com/embed?url=";
   var css_inserted = false;
+  var embed_timer = null;
   var queue = [];
  
-  var update_patterns = function() {
+  var update_patterns = function(callback) {
     $.ajax({
       method : "get",
       url : "https://noembed.com/providers",
@@ -17,7 +18,7 @@
             patterns.push(new RegExp(pattern));
           });
         });
-        embed();
+        callback() if callback;
       }
     });
   };
@@ -45,9 +46,10 @@
 
   var embed = function () {
     var link = queue.shift();
+    clearTimeout(embed_timer);
 
     if (!link) {
-      setTimeout(embed, 3000);
+      embed_timer = setTimeout(embed, 3000);
       return;
     }
 
@@ -70,11 +72,11 @@
         container.append(html);
       },
       complete: function() {
-        setTimeout(embed, 500);
+        embed_timer = setTimeout(embed, 500);
       }
     });
   };
 
-  update_patterns();
+  update_patterns(embed);
   setInterval(find_links, 1000);
 })();
