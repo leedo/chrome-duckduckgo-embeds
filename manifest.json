@@ -1,0 +1,26 @@
+{
+  "name" : "Enhanced Duck Duck Go Search Results",
+  "version" : "1.3",
+  "description" : "Put embeddable content (images, videos, etc.) inline with search results.",
+  "homepage_url" : "https://noembed.com",
+  "icons": {
+    "16" : "icon16.png",
+    "48" : "icon48.png",
+    "128" : "icon128.png"
+  },
+  "content_scripts" : [
+    {
+      "matches" : [
+        "http://duckduckgo.com/?q=*",
+        "https://duckduckgo.com/?q=*"
+      ],
+      "js" : [
+        "jquery.js",
+        "noembed.js"
+      ]
+    }
+  ],
+  "permissions" : [
+    "https://noembed.com/"
+  ]
+}
