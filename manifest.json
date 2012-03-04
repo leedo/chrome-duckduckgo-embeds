@@ -11,8 +11,8 @@
   "content_scripts" : [
     {
       "matches" : [
-        "http://duckduckgo.com/?q=*",
-        "https://duckduckgo.com/?q=*"
+        "http://duckduckgo.com/*",
+        "https://duckduckgo.com/*"
       ],
       "js" : [
         "jquery.js",
