@@ -1,9 +1,10 @@
 (function(){
   var patterns = $([]);
   var css = "https://noembed.com/noembed.css";
-  var oembed = "https://noembed.com/embed?url=";
+  var oembed = "https://noembed.com/embed";
   var css_inserted = false;
   var embed_timer = null;
+  var links_timer = null;
   var queue = [];
  
   var update_patterns = function(callback) {
@@ -13,12 +14,13 @@
       dataType : "json",
       success: function(data) {
         if (!data) return;
+        patterns = $([]);
         $(data).each(function(i, provider) {
           $(provider.patterns).each(function(j, pattern) {
             patterns.push(new RegExp(pattern));
           });
         });
-        callback() if callback;
+        if (callback) callback();
       }
     });
   };
@@ -33,6 +35,8 @@
   };
 
   var find_links = function () {
+    clearTimeout(links_timer);
+
     $('#links a.url:not(.noembed-processed)').each(function(i, link) {
       link = $(link);
       link.addClass("noembed-processed");
@@ -42,6 +46,8 @@
         }
       });
     });
+    
+    links_timer = setTimeout(find_links, 1000);
   };
 
   var embed = function () {
@@ -49,7 +55,7 @@
     clearTimeout(embed_timer);
 
     if (!link) {
-      embed_timer = setTimeout(embed, 3000);
+      embed_timer = setTimeout(embed, 1000);
       return;
     }
 
@@ -57,7 +63,11 @@
 
     $.ajax({
       method : "get",
-      url : oembed + encodeURI(link.attr('href')),
+      url : oembed,
+      data : {
+        url : link.attr('href'),
+        maxwidth: 500
+      },
       dataType: "json",
       success: function(data) {
         if (!data['html']) return;
@@ -71,11 +81,13 @@
         container.append(html);
       },
       complete: function() {
-        embed_timer = setTimeout(embed, 500);
+        embed_timer = setTimeout(embed, 250);
       }
     });
   };
 
-  update_patterns(embed);
-  setInterval(find_links, 1000);
+  update_patterns(function(){
+    find_links();
+    embed();
+  });
 })();
